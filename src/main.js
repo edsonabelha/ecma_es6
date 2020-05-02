@@ -1,8 +1,10 @@
+import api from './api';
 class App {
   constructor() {
     this.repositories = [];
 
     this.formEl = document.getElementById('repo-form');
+    this.inputEl = document.querySelector('input[name=repository]');
     this.listEl = document.getElementById('repo-list');
 
 
@@ -13,7 +15,7 @@ class App {
     this.formEl.onsubmit = event => this.addRepository(event);
   }
 
-  addRepository(event) {
+  async addRepository(event) {
     event.preventDefault();
 
     this.repositories.push({
