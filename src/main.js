@@ -14,20 +14,35 @@ class App {
   registerHandlers() {
     this.formEl.onsubmit = event => this.addRepository(event);
   }
-
+  //Metodo para Adicionar Repositorios
   async addRepository(event) {
     event.preventDefault();
 
+    const repoInput = this.inputEl.value;
+    //Verifica se tem alguma escrita no Input
+    if (repoInput.length === 0)
+      return;
+    //Faz a Busca pelo Repositorio Escrito no Input
+    const response = await api.get(`/repos/${repoInput}`);
+
+    //Usando a Desestruturação pegamos apenas as Informações Necessarias
+    //da Variavel Response que nos retorna os Dados Vindo da API
+    const {name, description, html_url, owner: { avatar_url} } = response.data;
+
+    //Usamos a Short Syntax e Chamamos as Variveis Criadas
     this.repositories.push({
-      name: 'rocketseat.com.br',
-      description: 'Tire a Sua Ideia do Papel e dé vida a sua StartUp.',
-      avatar_url: 'https://avatars0.githubusercontent.com/u/28929274?v=4',
-      html_url: 'https://github.com/Rocketseat',
+      name,
+      description,
+      avatar_url,
+      html_url,
     });
+
+    this.inputEl.value = '';
 
     this.render();
   }
 
+  // Renderiza os Elementos HTML na Tela
   render() {
     this.listEl.innerHTML = '';
 
@@ -43,6 +58,7 @@ class App {
 
       let linkEl = document.createElement('a');
       linkEl.setAttribute('target', '_blank');
+      linkEl.setAttribute('href', repo.html_url);
       linkEl.appendChild(document.createTextNode('Acessar'));
 
       let listItemEl = document.createElement('li');
@@ -56,5 +72,6 @@ class App {
   }
 }
 
+//Executa a Nossa Classe
 new App();
 
