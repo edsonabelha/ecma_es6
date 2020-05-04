@@ -11,8 +11,22 @@ class App {
     this.registerHandlers();
   }
 
+  //
   registerHandlers() {
     this.formEl.onsubmit = event => this.addRepository(event);
+  }
+
+  // Função pra Faser Loading na Pagina
+  setLoading(loading = true) {
+    if (loading === true) {
+        let loadingEl = document.createElement('span');
+        loadingEl.appendChild(document.createTextNode('Carregando'));
+        loadingEl.setAttribute('id', 'loading');
+
+        this.formEl.appendChild(loadingEl);
+    } else {
+      document.getElementById('loading').remove();
+    }
   }
   //Metodo para Adicionar Repositorios
   async addRepository(event) {
@@ -22,24 +36,36 @@ class App {
     //Verifica se tem alguma escrita no Input
     if (repoInput.length === 0)
       return;
-    //Faz a Busca pelo Repositorio Escrito no Input
-    const response = await api.get(`/repos/${repoInput}`);
 
-    //Usando a Desestruturação pegamos apenas as Informações Necessarias
-    //da Variavel Response que nos retorna os Dados Vindo da API
-    const {name, description, html_url, owner: { avatar_url} } = response.data;
+   //Chama a Função Lodaing
+    this.setLoading();
 
-    //Usamos a Short Syntax e Chamamos as Variveis Criadas
-    this.repositories.push({
-      name,
-      description,
-      avatar_url,
-      html_url,
-    });
+    try {
+      //Faz a Busca pelo Repositorio Escrito no Input
+      const response = await api.get(`/repos/${repoInput}`);
 
-    this.inputEl.value = '';
+      //Usando a Desestruturação pegamos apenas as Informações Necessarias
+      //da Variavel Response que nos retorna os Dados Vindo da API
+      const {name, description, html_url, owner: { avatar_url} } = response.data;
 
-    this.render();
+      //Usamos a Short Syntax e Chamamos as Variveis Criadas
+      this.repositories.push({
+        name,
+        description,
+        avatar_url,
+        html_url,
+      });
+
+      this.inputEl.value = '';
+
+      this.render();
+
+    } catch (error) {
+      alert('O Repositorio Não Existe!..')
+    }
+
+    //Seta o Loading Como Falso
+    this.setLoading(false);
   }
 
   // Renderiza os Elementos HTML na Tela
